@@ -1,13 +1,13 @@
 'use strict';
 
 const stats = {
-    slashCommands: 0,
-    triggers: 0,
-    convos: 0
+  slashCommands: 0,
+  triggers: 0,
+  convos: 0
 };
 
 const presentStats = (bot, message) => {
-  bot.api.users.list({presence: true} , (err, response) => {
+  bot.api.users.list({presence: true}, (err, response) => {
     let users = 0;
     let active = 0;
     response.members.forEach(user => {
@@ -18,26 +18,26 @@ const presentStats = (bot, message) => {
         users++;
       }
     });
-    bot.replyPrivate(message,
+    bot.whisper(message,
       `*${users}* registered - *${active}* active\n`
-       + `*${stats.slashCommands}* slashCommandActions\n`
-       + `*${stats.triggers}* triggerActions\n`
-       + `*${stats.convos}* conversationStartedActions\n`
+      + `*${stats.slashCommands}* slashCommandActions\n`
+      + `*${stats.triggers}* triggerActions\n`
+      + `*${stats.convos}* conversationStartedActions\n`
     );
   });
 };
 
-module.exports = function(controller) {
+module.exports = function (controller) {
 
-  controller.on('heard_trigger', function() {
-      stats.triggers++;
+  controller.on('heard_trigger', function () {
+    stats.triggers++;
   });
 
-  controller.on('conversationStarted', function() {
-      stats.convos++;
+  controller.on('conversationStarted', function () {
+    stats.convos++;
   });
 
-  controller.on('slash_command', function(bot, message) {
+  controller.on('slash_command', function (bot, message) {
     if (message.command !== '/stats') {
       return;
     }
