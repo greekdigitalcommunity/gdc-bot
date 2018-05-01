@@ -66,6 +66,9 @@ fabric.properties
 # Sonarlint plugin
 .idea/sonarlint
 
+# All
+.idea
+
 ### Node ###
 # Logs
 logs
