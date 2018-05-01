@@ -38,6 +38,9 @@ module.exports = function(controller) {
   });
 
   controller.on('slash_command', function(bot, message) {
+    if (message.command !== '/stats') {
+      return;
+    }
     stats.slashCommands++;
 
     bot.api.users.info({user: message.user_id}, (err, response) => {
