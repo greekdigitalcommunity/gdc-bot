@@ -12,7 +12,6 @@ const setupTeamFile = () => {
     fs.writeFileSync(`.data/db/teams/${parsedJson.id}.json`, JSON.stringify(parsedJson));
     console.log('wrote team info');
   } catch (e) {
-    console.log('team info', parsedJson, NOOB_FS);
     console.log('could not write team info.', e);
   }
 };
