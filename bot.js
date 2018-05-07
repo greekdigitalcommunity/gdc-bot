@@ -89,10 +89,7 @@ controller.startTicking();
 // Set up an Express-powered webserver to expose oauth and webhook endpoints
 var webserver = require(__dirname + '/components/express_webserver.js')(controller);
 
-if (!process.env.clientId || !process.env.clientSecret) {
-
-  // Load in some helpers that make running Botkit on Glitch.com better
-  require(__dirname + '/components/plugin_glitch.js')(controller);
+if (!process.env.clientId || !process.env.clientSecret) {  
 
   webserver.get('/', function(req, res){
     res.render('installation', {
