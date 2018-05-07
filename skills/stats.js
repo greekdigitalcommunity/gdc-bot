@@ -18,7 +18,7 @@ const presentStats = (bot, message) => {
         users++;
       }
     });
-    bot.whisper(message,
+    bot.replyPrivate(message,
       `*${users}* registered - *${active}* active\n`
       + `*${stats.slashCommands}* slashCommandActions\n`
       + `*${stats.triggers}* triggerActions\n`

@@ -43,7 +43,7 @@ module.exports = function (controller) {
         output += `#${channel.name} - \`${channel.topic}\` - [*${channel.members}*]\n`;
       });
 
-      bot.whisper(message, {text: output, link_names: true});
+      bot.replyPrivate(message, {text: output, link_names: true});
     });
   });
 };
