@@ -19,10 +19,13 @@ const presentStats = (bot, message) => {
       }
     });
     bot.replyPrivate(message,
+      {text:
       `*${users}* registered - *${active}* active\n`
       + `*${stats.slashCommands}* slashCommandActions\n`
       + `*${stats.triggers}* triggerActions\n`
-      + `*${stats.convos}* conversationStartedActions\n`
+      + `*${stats.convos}* conversationStartedActions\n`,
+      link_names: 1, parse: null
+      }
     );
   });
 };
