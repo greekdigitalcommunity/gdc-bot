@@ -79,8 +79,6 @@ module.exports = function (controller) {
       .addUrl('Website', 'url', 'http://greekdigitalcommunity.com');
 
     bot.replyWithDialog(message, dialog.asObject());
-    // console.log(message)
-    // bot.replyInteractive(message, 'Thank you');
   });
 
   controller.on('dialog_submission', function handler (bot, message) {
