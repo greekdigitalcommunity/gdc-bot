@@ -30,7 +30,7 @@ module.exports = function (controller) {
 
   controller.on('member_joined_channel', function (bot, message) {
 
-    bot.api.channels.info({channel: message.channel}, function (err, response) {
+    bot.api.channels.info({ channel: message.channel }, function (err, response) {
       console.log(response);
       if (response.channel.name === 'hello') {
         bot.startConversation(message, function (err, convo) {
@@ -66,30 +66,34 @@ module.exports = function (controller) {
 
   controller.on('interactive_message_callback', function (bot, message) {
     console.log(message);
-    var dialog = bot.createDialog(
-      'GDC Bot',
-      '133',
-      'Submit'
-    ).addText('Text', 'text', 'some text')
-      .addSelect('Select', 'select', null, [{label: 'Foo', value: 'foo'}, {
-        label: 'Bar',
-        value: 'bar'
-      }], {placeholder: 'Select One'})
-      .addTextarea('Textarea', 'textarea', 'some longer text', {placeholder: 'Put words here'})
-      .addUrl('Website', 'url', 'http://greekdigitalcommunity.com');
+    if (message.callback_id === '123') {
+      var dialog = bot.createDialog(
+        'GDC Bot',
+        '123',
+        'Submit'
+      ).addText('Text', 'text', 'some text')
+        .addSelect('Select', 'select', null, [{ label: 'Foo', value: 'foo' }, {
+          label: 'Bar',
+          value: 'bar'
+        }], { placeholder: 'Select One' })
+        .addTextarea('Textarea', 'textarea', 'some longer text', { placeholder: 'Put words here' })
+        .addUrl('Website', 'url', 'http://greekdigitalcommunity.com');
 
-    bot.replyWithDialog(message, dialog.asObject());
+      bot.replyWithDialog(message, dialog.asObject());
+    }
   });
 
-  controller.on('dialog_submission', function handler (bot, message) {
+  controller.on('dialog_submission', function handler(bot, message) {
     console.log(message);
     // bot.replyPrivate(message, 'Got it!');
-    bot.sendEphemeral({
-      channel: 'hello',
-      user: message.user,
-      replace_original: true,
-      text: 'Pssst! You my friend, are a true Bot Champion!'
-    });
+    if (message.callback_id === '123') {
+      bot.sendEphemeral({
+        channel: 'hello',
+        user: message.user,
+        replace_original: true,
+        text: 'Pssst! You my friend, are a true Bot Champion!'
+      });
+    }
 
     // call dialogOk or else Slack will think this is an error
     bot.dialogOk();
