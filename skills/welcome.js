@@ -65,8 +65,8 @@ module.exports = function (controller) {
   });
 
   controller.on('interactive_message_callback', function (bot, message) {
-    console.log(message);
     if (message.callback_id === '123') {
+      console.log(message);
       var dialog = bot.createDialog(
         'GDC Bot',
         '123',
@@ -84,9 +84,9 @@ module.exports = function (controller) {
   });
 
   controller.on('dialog_submission', function handler(bot, message) {
-    console.log(message);
     // bot.replyPrivate(message, 'Got it!');
     if (message.callback_id === '123') {
+      console.log(message);
       bot.sendEphemeral({
         channel: 'hello',
         user: message.user,
