@@ -1,4 +1,4 @@
-const debug = require('debug')('botkit:incoming_webhooks');
+'use strict';
 
 const fs = require('fs');
 const friendly = process.env.FRIENDLY;

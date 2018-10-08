@@ -1,6 +1,4 @@
-const debug = require('debug')('botkit:incoming_webhooks');
-
-const fs = require('fs');
+'use strict';
 
 module.exports = function (webserver, controller) {
     webserver.get('/ping', (req, res) => {

@@ -69,7 +69,7 @@ module.exports = function (controller) {
       console.log(message);
       var dialog = bot.createDialog(
         'GDC Bot',
-        '133',
+        '123',
         'Submit'
       ).addText('Text', 'text', 'some text')
         .addSelect('Select', 'select', null, [{ label: 'Foo', value: 'foo' }, {
@@ -84,18 +84,18 @@ module.exports = function (controller) {
   });
 
   controller.on('dialog_submission', function handler(bot, message) {
+    // bot.replyPrivate(message, 'Got it!');
     if (message.callback_id === '123') {
       console.log(message);
-      // bot.replyPrivate(message, 'Got it!');
       bot.sendEphemeral({
         channel: 'hello',
         user: message.user,
         replace_original: true,
         text: 'Pssst! You my friend, are a true Bot Champion!'
       });
-
-      // call dialogOk or else Slack will think this is an error
-      bot.dialogOk();
     }
+
+    // call dialogOk or else Slack will think this is an error
+    bot.dialogOk();
   });
 };
