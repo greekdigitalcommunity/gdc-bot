@@ -1,6 +1,6 @@
 'use strict';
 
-const fs = require('fs');
+const { fsSync } = require('../scripts');
 const request = require('request');
 const { JSDOM } = require('jsdom');
 const moment = require('moment');
@@ -13,24 +13,16 @@ const DEFAULT_REDIS_URI = process.env.REDIS_URI;
 const redisClient = redis.createClient(DEFAULT_REDIS_URI);
 const validateUrl = (value) => /^(?:(?:(?:https?|ftp):)?\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:[/?#]\S*)?$/i.test(value);
 
-const syncToLocalFile = (data) =>
-  fs.writeFile('.data/db/jobs/jobs.json', JSON.stringify(data), 'utf8', (err) => {
-    if (err) {
-      console.log('could not sync to local file', err);
-    } else {
-      console.log('sync to file was successful.');
-    }
-  });
 const syncToRedis = (data) => redisClient.set(`${JOBS_PREFIX}:storage`, JSON.stringify(data));
 let JOBS = {};
 
 redisClient.get(`${JOBS_PREFIX}:storage`, (err, res) => {
   if (err) {
     console.log('could not read data from redis, reading from file', err);
-    JOBS = JSON.parse(fs.readFileSync('.data/db/jobs/jobs.json', 'utf8'));
+    JOBS = JSON.parse(fsSync.syncToLocalFile('.data/db/jobs/jobs.json', 'utf8'));
   }
   let parsed = JSON.parse(res);
-  syncToLocalFile(parsed);
+   fsSync.syncToLocalFile(parsed);
   JOBS = parsed;
 });
 
@@ -56,7 +48,7 @@ module.exports = function (controller) {
           let foundIndex = JOBS.jobs.findIndex(job => submission === job.url);
           if (foundIndex > -1) {
             JOBS.jobs.splice(foundIndex, 1);
-            syncToLocalFile(JOBS);
+            fsSync.syncToLocalFile(JOBS);
             syncToRedis(JOBS);
             bot.replyInteractive(message, `Thanks I've removed job: <${submission}>.`);
             bot.dialogOk();
@@ -155,7 +147,7 @@ function startInteractiveConvo(bot, message, controller, job) {
         bot.replyWithDialog(message, dialog.asObject());
       } else if (message.text === 'yes') {
         JOBS.jobs.unshift(job);
-        syncToLocalFile(JOBS);
+        fsSync.syncToLocalFile(JOBS);
         syncToRedis(JOBS);
         bot.replyInteractive(message, `Job ${JSON.stringify(job)} added - thank you!`);
       } else {
@@ -170,7 +162,7 @@ function startInteractiveConvo(bot, message, controller, job) {
         job.pageTitle = message.submission.text;
       }
       JOBS.jobs.unshift(job);
-      syncToLocalFile(JOBS);
+      fsSync.syncToLocalFile(JOBS);
       bot.replyInteractive(message, `Thanks I've changed the title to: <${job.pageTitle}> and added the job.`);
       bot.dialogOk();
     }
