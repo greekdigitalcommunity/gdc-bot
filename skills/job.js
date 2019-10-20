@@ -1,6 +1,6 @@
 'use strict';
 
-const { fsSync } = require('../scripts');
+const fsSync = require('../scripts/fsSync');
 const request = require('request');
 const { JSDOM } = require('jsdom');
 const moment = require('moment');
