@@ -3,8 +3,8 @@
 const fsSync = require('../scripts/fsSync');
 const moment = require('moment');
 
-const AT_START_OF_DAY = moment.startOf('day');
-const AT_END_OF_DAY = moment.endOf('day');
+const AT_START_OF_DAY = moment().startOf('day').toString();
+const AT_END_OF_DAY = moment().endOf('day').toString();
 
 const stats = {
   slashCommands: 0,
