@@ -1,9 +1,16 @@
 'use strict';
 
+const fsSync = require('../scripts/fsSync');
+const moment = require('moment');
+
+const AT_START_OF_DAY = moment.startOf('day');
+const AT_END_OF_DAY = moment.endOf('day');
+
 const stats = {
   slashCommands: 0,
   triggers: 0,
-  convos: 0
+  convos: 0,
+  newUsers: []
 };
 
 const presentStats = (bot, message) => {
@@ -38,6 +45,12 @@ module.exports = function (controller) {
 
   controller.on('conversationStarted', function () {
     stats.convos++;
+  });
+
+  controller.on('team_join', function() {
+    const now = moment().toString();
+    console.log('NEW USER JOINED AT', now);
+    stats.newUsers.push({newUser: now});
   });
 
   controller.on('slash_command', function (bot, message) {

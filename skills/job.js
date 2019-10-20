@@ -8,6 +8,7 @@ const redis = require('redis');
 
 const STOPWORDS = /(?:^|\s+)(?:(job opening -))(?=\s+|$)/gi;
 const JOBS_PREFIX = 'jobs';
+const JOBS_DIR = '.data/db/jobs/jobs.json';
 const DEFAULT_REDIS_URI = process.env.REDIS_URI;
 
 const redisClient = redis.createClient(DEFAULT_REDIS_URI);
@@ -19,10 +20,10 @@ let JOBS = {};
 redisClient.get(`${JOBS_PREFIX}:storage`, (err, res) => {
   if (err) {
     console.log('could not read data from redis, reading from file', err);
-    JOBS = JSON.parse(fsSync.syncToLocalFile('.data/db/jobs/jobs.json', 'utf8'));
+    JOBS = JSON.parse(fsSync.readFileSync(JOBS_DIR, 'utf8'));
   }
   let parsed = JSON.parse(res);
-   fsSync.syncToLocalFile(parsed);
+  fsSync.syncToLocalFile(parsed, JOBS_DIR);
   JOBS = parsed;
 });
 
@@ -48,7 +49,7 @@ module.exports = function (controller) {
           let foundIndex = JOBS.jobs.findIndex(job => submission === job.url);
           if (foundIndex > -1) {
             JOBS.jobs.splice(foundIndex, 1);
-            fsSync.syncToLocalFile(JOBS);
+            fsSync.syncToLocalFile(JOBS, JOBS_DIR);
             syncToRedis(JOBS);
             bot.replyInteractive(message, `Thanks I've removed job: <${submission}>.`);
             bot.dialogOk();
@@ -85,7 +86,7 @@ function testJobLink(url, bot, controller, message) {
       return;
     }
     if (r.statusCode != 200) {
-      console.log('bad status ', r.statusCode, 'for url: ', url);      
+      console.log('bad status ', r.statusCode, 'for url: ', url);
     } else {
       job.url = url;
       job.postedBy = '';
@@ -147,7 +148,7 @@ function startInteractiveConvo(bot, message, controller, job) {
         bot.replyWithDialog(message, dialog.asObject());
       } else if (message.text === 'yes') {
         JOBS.jobs.unshift(job);
-        fsSync.syncToLocalFile(JOBS);
+        fsSync.syncToLocalFile(JOBS, JOBS_DIR);
         syncToRedis(JOBS);
         bot.replyInteractive(message, `Job ${JSON.stringify(job)} added - thank you!`);
       } else {
@@ -162,7 +163,7 @@ function startInteractiveConvo(bot, message, controller, job) {
         job.pageTitle = message.submission.text;
       }
       JOBS.jobs.unshift(job);
-      fsSync.syncToLocalFile(JOBS);
+      fsSync.syncToLocalFile(JOBS, JOBS_DIR);
       bot.replyInteractive(message, `Thanks I've changed the title to: <${job.pageTitle}> and added the job.`);
       bot.dialogOk();
     }
