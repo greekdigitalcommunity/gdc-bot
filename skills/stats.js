@@ -5,6 +5,7 @@ const moment = require('moment');
 
 const AT_START_OF_DAY = moment().startOf('day').toString();
 const AT_END_OF_DAY = moment().endOf('day').toString();
+const STATS_ACTIVE = '.data/db/stats/active.json';
 
 const stats = {
   slashCommands: 0,
@@ -14,7 +15,7 @@ const stats = {
 };
 
 const presentStats = (bot, message) => {
-  bot.api.users.list({presence: true}, (err, response) => {
+  bot.api.users.list({ presence: true }, (err, response) => {
     let users = 0;
     let active = 0;
     response.members.forEach(user => {
@@ -25,13 +26,15 @@ const presentStats = (bot, message) => {
         users++;
       }
     });
+    fsSync.syncToLocalFile([{ 'registered': users, 'active': active }], STATS_ACTIVE);
     bot.replyPrivate(message,
-      {text:
-      `*${users}* registered - *${active}* active\n`
-      + `*${stats.slashCommands}* slashCommandActions\n`
-      + `*${stats.triggers}* triggerActions\n`
-      + `*${stats.convos}* conversationStartedActions\n`,
-      link_names: 1, parse: 'full'
+      {
+        text:
+          `*${users}* registered - *${active}* active\n`
+          + `*${stats.slashCommands}* slashCommandActions\n`
+          + `*${stats.triggers}* triggerActions\n`
+          + `*${stats.convos}* conversationStartedActions\n`,
+        link_names: 1, parse: 'full'
       }
     );
   });
@@ -47,10 +50,10 @@ module.exports = function (controller) {
     stats.convos++;
   });
 
-  controller.on('team_join', function() {
+  controller.on('team_join', function () {
     const now = moment().toString();
     console.log('NEW USER JOINED AT', now);
-    stats.newUsers.push({newUser: now});
+    stats.newUsers.push({ newUser: now });
   });
 
   controller.on('slash_command', function (bot, message) {
@@ -59,7 +62,7 @@ module.exports = function (controller) {
     }
     stats.slashCommands++;
 
-    bot.api.users.info({user: message.user_id}, (err, response) => {
+    bot.api.users.info({ user: message.user_id }, (err, response) => {
       if (response.user.is_admin) {
         presentStats(bot, message);
       }
