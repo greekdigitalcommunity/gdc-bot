@@ -50,9 +50,9 @@ module.exports = function (controller) {
     stats.convos++;
   });
 
-  controller.on('team_join', function () {
+  controller.on('team_join', function (bot, message) {
     const now = moment().toString();
-    console.log('NEW USER JOINED AT', now);
+    console.log('NEW USER JOINED AT', now, bot, message);
     stats.newUsers.push({ newUser: now });
   });
 
