@@ -89,7 +89,7 @@ controller.startTicking();
 // Set up an Express-powered webserver to expose oauth and webhook endpoints
 var webserver = require(__dirname + '/components/express_webserver.js')(controller);
 
-if (!process.env.clientId || !process.env.clientSecret) {  
+if (!process.env.clientId || !process.env.clientSecret) {
 
   webserver.get('/', function(req, res){
     res.render('installation', {
@@ -122,6 +122,9 @@ if (!process.env.clientId || !process.env.clientSecret) {
 
   // enable advanced botkit studio metrics
   require('botkit-studio-metrics')(controller);
+
+  // custom component to record user related metrics
+  require(__dirname + '/components/user_stats.js')(controller);
 
   var normalizedPath = require("path").join(__dirname, "skills");
   require("fs").readdirSync(normalizedPath).forEach(function(file) {
