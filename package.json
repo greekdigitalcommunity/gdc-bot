@@ -16,7 +16,7 @@
     "express": "^4.14.0",
     "express-hbs": "^1.0.4",
     "google-spreadsheet": "^2.0.6",
-    "jsdom": "11.7.0",
+    "jsdom": "16.5.0",
     "node-env-file": "^0.1.8",
     "querystring": "^0.2.0",
     "redis": "^2.8.0",
